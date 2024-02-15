@@ -1,4 +1,4 @@
-namespace AdoNet
+﻿namespace AdoNet
 {
     public class WeatherForecast
     {
