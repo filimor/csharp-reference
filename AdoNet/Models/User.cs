@@ -12,9 +12,9 @@ public class User
     public string RegistrationStatus { get; set; }
     public DateTimeOffset RegistrationDate { get; set; }
 
-    public Contact Contact { get; set; }
+    public Contact? Contact { get; set; }
 
-    public ICollection<DeliveryAddress> DeliveryAddresses { get; set; }
+    public ICollection<DeliveryAddress>? DeliveryAddresses { get; set; }
 
-    public ICollection<Department> Departments { get; set; }
+    public ICollection<Department>? Departments { get; set; }
 }
