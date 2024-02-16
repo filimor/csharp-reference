@@ -14,14 +14,55 @@ public class UserRepository : IUserRepository
 
         var command = new SqlCommand("SELECT * FROM Users", _connection);
 
-        try
+        using (_connection)
         {
             _connection.Open();
-            var dataReader = command.ExecuteReader();
 
-            while (dataReader.Read())
+            using (command)
             {
-                users.Add(new User()
+                var dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    users.Add(new User()
+                    {
+                        Id = dataReader.GetInt32("Id"),
+                        Name = dataReader.GetString("Name"),
+                        Email = dataReader.GetString("Email"),
+                        Gender = dataReader.GetString("Gender"),
+                        RG = dataReader.GetString("RG"),
+                        CPF = dataReader.GetString("CPF"),
+                        MotherName = dataReader.GetString("MotherName"),
+                        RegistrationStatus = dataReader.GetString("RegistrationStatus"),
+                        RegistrationDate = dataReader.GetDateTimeOffset(8)
+                    });
+                }
+            }
+        }
+
+
+        return users;
+    }
+
+    public User? Get(int id)
+    {
+        var command = new SqlCommand("SELECT * FROM Users WHERE Id = @Id", _connection);
+        command.Parameters.AddWithValue("@Id", id);
+
+        using (_connection)
+        {
+            _connection.Open();
+
+            using (command)
+            {
+                var dataReader = command.ExecuteReader();
+
+                if (!dataReader.Read())
+                {
+                    return null;
+                }
+
+                return new User()
                 {
                     Id = dataReader.GetInt32("Id"),
                     Name = dataReader.GetString("Name"),
@@ -32,20 +73,11 @@ public class UserRepository : IUserRepository
                     MotherName = dataReader.GetString("MotherName"),
                     RegistrationStatus = dataReader.GetString("RegistrationStatus"),
                     RegistrationDate = dataReader.GetDateTimeOffset(8)
-                });
+                };
             }
         }
-        finally
-        {
-            _connection.Close();
-        }
 
-        return users;
-    }
 
-    public User? Get(int id)
-    {
-        throw new NotImplementedException();
     }
 
     public void Insert(User user)
