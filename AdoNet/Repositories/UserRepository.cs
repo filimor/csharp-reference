@@ -6,7 +6,7 @@ namespace AdoNet.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly SqlConnection _connection = new ("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AdoNetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;");
+    private readonly SqlConnection _connection = new("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AdoNetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;");
 
     public List<User> Get()
     {
