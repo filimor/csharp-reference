@@ -6,7 +6,7 @@ namespace AdoNet.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly SqlConnection _connection = new (@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AdoNetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;");
+    private readonly SqlConnection _connection = new(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AdoNetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;");
 
     public List<User> Get()
     {
@@ -74,6 +74,48 @@ public class UserRepository : IUserRepository
     public void Insert(User user)
     {
         var command = new SqlCommand("INSERT INTO Users(Name, Email, Gender, RG, CPF, MotherName, RegistrationStatus, RegistrationDate) VALUES(@Name, @Email, @Gender, @RG, @CPF, @MotherName, @RegistrationStatus, @RegistrationDate); SELECT CAST(scope_identity() AS INT);", _connection);
+        SetCommandParameters(user, command);
+
+        using (_connection)
+        using (command)
+        {
+            _connection.Open();
+            user.Id = (int)command.ExecuteScalar();
+        }
+    }
+
+    public void Update(User user)
+    {
+        var command =
+            new SqlCommand(
+                "UPDATE Users SET Name = @Name, Email = @Email, Gender = @Gender, RG = @RG, CPF = @CPF, MotherName = @MotherName , RegistrationStatus = @RegistrationStatus , RegistrationDate = @RegistrationDate WHERE Id = @Id;", _connection);
+        SetCommandParameters(user, command);
+        command.Parameters.AddWithValue("@Id", user.Id);
+
+        using (_connection)
+        using (command)
+        {
+            _connection.Open();
+            command.ExecuteNonQuery();
+        }
+
+    }
+
+    public void Delete(int id)
+    {
+        var command = new SqlCommand("DELETE FROM Users WHERE Id = @Id", _connection);
+        command.Parameters.AddWithValue("@Id", id);
+
+        using (_connection)
+        using (command)
+        {
+            _connection.Open();
+            command.ExecuteNonQuery();
+        }
+    }
+
+    private static void SetCommandParameters(User user, SqlCommand command)
+    {
         command.Parameters.AddWithValue("@Name", user.Name);
         command.Parameters.AddWithValue("@Email", user.Email);
         command.Parameters.AddWithValue("@Gender", user.Gender);
@@ -82,23 +124,5 @@ public class UserRepository : IUserRepository
         command.Parameters.AddWithValue("@MotherName", user.MotherName);
         command.Parameters.AddWithValue("@RegistrationStatus", user.RegistrationStatus);
         command.Parameters.AddWithValue("@RegistrationDate", user.RegistrationDate);
-
-        using (_connection)
-        using (command)
-        {
-            _connection.Open();
-            user.Id = (int)command.ExecuteScalar();
-
-        }
-    }
-
-    public void Update(User user)
-    {
-
-    }
-
-    public void Delete(int id)
-    {
-
     }
 }
