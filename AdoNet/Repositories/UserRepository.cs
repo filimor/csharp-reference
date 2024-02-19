@@ -42,7 +42,7 @@ public class UserRepository : IUserRepository
 
     public User? Get(int id)
     {
-        var command = new SqlCommand("SELECT * FROM Users WHERE Id = @Id;", _connection);
+        var command = new SqlCommand("SELECT u.Id, u.Name, u.Email, u.Gender, u.RG, u.CPF, u.MotherName, u.RegistrationStatus, u.RegistrationDate, c.Id ContactId, c.PhoneNumber, c.MobilePhone FROM Users u LEFT JOIN Contacts c ON u.Id = c.Id WHERE u.Id = @Id;", _connection);
         command.Parameters.AddWithValue("@Id", id);
 
         using (_connection)
@@ -66,7 +66,13 @@ public class UserRepository : IUserRepository
                 CPF = dataReader.GetString("CPF"),
                 MotherName = dataReader.GetString("MotherName"),
                 RegistrationStatus = dataReader.GetString("RegistrationStatus"),
-                RegistrationDate = dataReader.GetDateTimeOffset(8)
+                RegistrationDate = dataReader.GetDateTimeOffset(8),
+                Contact = new Contact()
+                {
+                    Id = dataReader.GetInt32("ContactId"),
+                    PhoneNumber = dataReader.GetString("PhoneNumber"),
+                    MobilePhone = dataReader.GetString("MobilePhone"),
+                }
             };
         }
     }

@@ -1,10 +1,15 @@
-﻿namespace AdoNet.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace AdoNet.Models;
 
 public class Contact
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
+
+    [JsonIgnore] public int UserId { get; set; }
+
     public string PhoneNumber { get; set; }
     public string MobilePhone { get; set; }
-    public User User { get; set; }
+
+    [JsonIgnore] public User User { get; set; }
 }
