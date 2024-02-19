@@ -32,7 +32,7 @@ CREATE TABLE [dbo].[DeliveryAddresses] (
 	[State] CHAR(2) NOT NULL,
 	[City] VARCHAR(120) NOT NULL,
 	[District] VARCHAR(200) NOT NULL,
-	[Address] VARCHAR(200) NOT NULL,
+	[Street] VARCHAR(200) NOT NULL,
 	[Number] VARCHAR(20) NULL,
 	[Compliment] VARCHAR(30) NULL,
 	

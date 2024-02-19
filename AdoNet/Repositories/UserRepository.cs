@@ -6,7 +6,9 @@ namespace AdoNet.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly SqlConnection _connection = new(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AdoNetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;");
+    private readonly SqlConnection _connection =
+        new(
+            @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AdoNetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;");
 
     public List<User> Get()
     {
@@ -22,7 +24,7 @@ public class UserRepository : IUserRepository
 
             while (dataReader.Read())
             {
-                users.Add(new User()
+                users.Add(new User
                 {
                     Id = dataReader.GetInt32("Id"),
                     Name = dataReader.GetString("Name"),
@@ -42,44 +44,90 @@ public class UserRepository : IUserRepository
 
     public User? Get(int id)
     {
-        var command = new SqlCommand("SELECT u.Id, u.Name, u.Email, u.Gender, u.RG, u.CPF, u.MotherName, u.RegistrationStatus, u.RegistrationDate, c.Id ContactId, c.PhoneNumber, c.MobilePhone FROM Users u LEFT JOIN Contacts c ON u.Id = c.Id WHERE u.Id = @Id;", _connection);
-        command.Parameters.AddWithValue("@Id", id);
+        var command1 =
+            new SqlCommand(
+                "SELECT d.Id AddressId, d.Name, d.ZipCode, d.State, d.City, d.District, d.Street, d.Number, d.Compliment FROM Users u LEFT JOIN DeliveryAddresses d ON u.Id = d.UserId WHERE u.Id = @Id;",
+                _connection);
+        command1.Parameters.AddWithValue("@Id", id);
+
+        var command2 = new SqlCommand(
+            "SELECT u.Id, u.Name, u.Email, u.Gender, u.RG, u.CPF, u.MotherName, u.RegistrationStatus, u.RegistrationDate, c.Id ContactId, c.PhoneNumber, c.MobilePhone FROM Users u LEFT JOIN Contacts c ON u.Id = c.UserId WHERE u.Id = @Id;",
+            _connection);
+        command2.Parameters.AddWithValue("@Id", id);
+
 
         using (_connection)
-        using (command)
         {
+            var deliveryAddresses = new List<DeliveryAddress>();
             _connection.Open();
-            var dataReader = command.ExecuteReader();
 
-            if (!dataReader.Read())
+            using (command1)
+            {
+                var dataReader = command1.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    var address = new DeliveryAddress
+                    {
+                        Id = dataReader.GetInt32("AddressId"),
+                        Name = dataReader.GetString("Name"),
+                        Street = dataReader.GetString("Street"),
+                        Number = dataReader.GetString("Number"),
+                        Compliment = dataReader.GetString("Compliment"),
+                        District = dataReader.GetString("District"),
+                        City = dataReader.GetString("City"),
+                        State = dataReader.GetString("State"),
+                        ZipCode = dataReader.GetString("ZipCode")
+                    };
+
+                    deliveryAddresses.Add(address);
+                }
+
+                dataReader.Close();
+            }
+
+            if (deliveryAddresses.Count == 0)
             {
                 return null;
             }
 
-            return new User()
+            using (command2)
             {
-                Id = dataReader.GetInt32("Id"),
-                Name = dataReader.GetString("Name"),
-                Email = dataReader.GetString("Email"),
-                Gender = dataReader.GetString("Gender"),
-                RG = dataReader.GetString("RG"),
-                CPF = dataReader.GetString("CPF"),
-                MotherName = dataReader.GetString("MotherName"),
-                RegistrationStatus = dataReader.GetString("RegistrationStatus"),
-                RegistrationDate = dataReader.GetDateTimeOffset(8),
-                Contact = new Contact()
+                var dataReader = command2.ExecuteReader();
+
+                if (!dataReader.Read())
                 {
-                    Id = dataReader.GetInt32("ContactId"),
-                    PhoneNumber = dataReader.GetString("PhoneNumber"),
-                    MobilePhone = dataReader.GetString("MobilePhone"),
+                    return null;
                 }
-            };
+
+                return new User
+                {
+                    Id = dataReader.GetInt32("Id"),
+                    Name = dataReader.GetString("Name"),
+                    Email = dataReader.GetString("Email"),
+                    Gender = dataReader.GetString("Gender"),
+                    RG = dataReader.GetString("RG"),
+                    CPF = dataReader.GetString("CPF"),
+                    MotherName = dataReader.GetString("MotherName"),
+                    RegistrationStatus = dataReader.GetString("RegistrationStatus"),
+                    RegistrationDate = dataReader.GetDateTimeOffset(8),
+                    Contact = new Contact
+                    {
+                        Id = dataReader.GetInt32("ContactId"),
+                        PhoneNumber = dataReader.GetString("PhoneNumber"),
+                        MobilePhone = dataReader.GetString("MobilePhone")
+                    },
+                    DeliveryAddresses = deliveryAddresses
+                };
+            }
         }
     }
 
     public void Insert(User user)
     {
-        var command = new SqlCommand("INSERT INTO Users(Name, Email, Gender, RG, CPF, MotherName, RegistrationStatus, RegistrationDate) VALUES(@Name, @Email, @Gender, @RG, @CPF, @MotherName, @RegistrationStatus, @RegistrationDate); SELECT CAST(scope_identity() AS INT);", _connection);
+        var command = new SqlCommand(
+            "INSERT INTO Users(Name, Email, Gender, RG, CPF, MotherName, RegistrationStatus, RegistrationDate) VALUES(@Name, @Email, @Gender, @RG, @CPF, @MotherName, @RegistrationStatus, @RegistrationDate); SELECT CAST(scope_identity() AS INT);",
+            _connection);
         SetCommandParameters(user, command);
 
         using (_connection)
@@ -94,7 +142,8 @@ public class UserRepository : IUserRepository
     {
         var command =
             new SqlCommand(
-                "UPDATE Users SET Name = @Name, Email = @Email, Gender = @Gender, RG = @RG, CPF = @CPF, MotherName = @MotherName , RegistrationStatus = @RegistrationStatus , RegistrationDate = @RegistrationDate WHERE Id = @Id;", _connection);
+                "UPDATE Users SET Name = @Name, Email = @Email, Gender = @Gender, RG = @RG, CPF = @CPF, MotherName = @MotherName , RegistrationStatus = @RegistrationStatus , RegistrationDate = @RegistrationDate WHERE Id = @Id;",
+                _connection);
         SetCommandParameters(user, command);
         command.Parameters.AddWithValue("@Id", user.Id);
 
@@ -104,7 +153,6 @@ public class UserRepository : IUserRepository
             _connection.Open();
             command.ExecuteNonQuery();
         }
-
     }
 
     public void Delete(int id)

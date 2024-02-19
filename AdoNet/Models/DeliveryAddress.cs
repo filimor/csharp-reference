@@ -1,9 +1,13 @@
-﻿namespace AdoNet.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace AdoNet.Models;
 
 public class DeliveryAddress
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
+
+    [JsonIgnore] public int UserId { get; set; }
+
     public string Name { get; set; }
     public string ZipCode { get; set; }
     public string State { get; set; }
@@ -13,5 +17,5 @@ public class DeliveryAddress
     public string Number { get; set; }
     public string Compliment { get; set; }
 
-    public User User { get; set; }
+    [JsonIgnore] public User User { get; set; }
 }
