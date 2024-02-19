@@ -32,7 +32,7 @@ CREATE TABLE [dbo].[DeliveryAddresses] (
 	[State] CHAR(2) NOT NULL,
 	[City] VARCHAR(120) NOT NULL,
 	[District] VARCHAR(200) NOT NULL,
-	[Address] VARCHAR(200) NOT NULL,
+	[Street] VARCHAR(200) NOT NULL,
 	[Number] VARCHAR(20) NULL,
 	[Compliment] VARCHAR(30) NULL,
 	
@@ -61,12 +61,12 @@ go
 
 
 -- Store Procedures na tabela de Users
-CREATE PROCEDURE dbo.SelecionarUsers
+CREATE PROCEDURE dbo.SelectUsers
 AS
     SELECT * FROM [dbo].[Users]
 go
 
-CREATE PROCEDURE dbo.SelecionarUser
+CREATE PROCEDURE dbo.SelectUser
 (
 	@id int
 )
@@ -74,7 +74,7 @@ AS
     SELECT * FROM [dbo].[Users] WHERE Id = @id
 go
 
-CREATE PROCEDURE dbo.CadastrarUser
+CREATE PROCEDURE dbo.InsertUser
 (
 	@name varchar(70),
 	@email varchar(100),
@@ -90,7 +90,7 @@ AS
 	(@name, @email, @gender, @rg, @cpf, @motherName, @registrationStatus, @registrationDate); SELECT CAST(scope_identity() AS int)
 go
 
-CREATE PROCEDURE dbo.AtualizarUser 
+CREATE PROCEDURE dbo.UpdateUser
 (
 	@id int,
 	@name varchar(70),
@@ -103,19 +103,19 @@ CREATE PROCEDURE dbo.AtualizarUser
 	@registrationDate datetimeoffset
 )
 AS
-	UPDATE [dbo].[Users] SET 
+	UPDATE [dbo].[Users] SET
 	Name = @name,
 	Email = @email,
 	Gender = @gender,
 	RG = @rg,
 	CPF = @cpf,
 	MotherName = @motherName,
-	RegistrationStatus = @registrationStatus, 
+	RegistrationStatus = @registrationStatus,
 	RegistrationDate = @registrationDate
 	WHERE Id = @id
 go
 
-CREATE PROCEDURE dbo.DeletarUser
+CREATE PROCEDURE dbo.DeleteUser
 (
 	@id int
 )

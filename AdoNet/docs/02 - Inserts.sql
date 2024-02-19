@@ -22,7 +22,7 @@ INSERT INTO [dbo].[Contacts] (UserId, PhoneNumber, MobilePhone) VALUES
 (9, '(43) 49019-5729', '(43) 98377-2284'),
 (10, '(38) 83710-6739', '(38) 98760-2494');
 
-INSERT INTO [dbo].[DeliveryAddresses] (UserId, Name, ZipCode, State, City, District, Address, Number, Compliment) VALUES
+INSERT INTO [dbo].[DeliveryAddresses] (UserId, Name, ZipCode, State, City, District, Street, Number, Compliment) VALUES
 (1, 'Casa', '49700-974', 'SE', 'Capela', 'Centro', 'Rua Principal, s/n', '12', 'Casa 12 - Verde'),
 (1, 'Trabalho', '49700-974', 'SE', 'Capela', 'Centro', 'Rua Principal, s/n', '10', 'Ed. Fulano - Sala 10'),
 (1, 'Casa da mãe', '49700-901', 'SE', 'Capela', 'Centro', 'Rua Principal, s/n', '1', 'Casa 1'),
