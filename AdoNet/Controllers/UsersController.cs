@@ -32,15 +32,15 @@ public class UsersController : ControllerBase
     [HttpPost]
     public IActionResult Insert([FromBody] User user)
     {
-        try
-        {
-            _repository.Insert(user);
-            return Ok(user);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
+        //try
+        //{
+        _repository.Insert(user);
+        return Ok(user);
+        //}
+        //catch (Exception e)
+        //{
+        //    return StatusCode(500, e.Message);
+        //}
     }
 
     [HttpPut]
