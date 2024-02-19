@@ -46,19 +46,26 @@ public class UserRepository : IUserRepository
     {
         var command1 =
             new SqlCommand(
-                "SELECT d.Id AddressId, d.Name, d.ZipCode, d.State, d.City, d.District, d.Street, d.Number, d.Compliment FROM Users u LEFT JOIN DeliveryAddresses d ON u.Id = d.UserId WHERE u.Id = @Id;",
+                "SELECT da.Id, da.Name, da.ZipCode, da.State, da.City, da.District, da.Street, da.Number, da.Compliment FROM Users u LEFT JOIN DeliveryAddresses da ON u.Id = da.UserId WHERE u.Id = @Id;",
                 _connection);
         command1.Parameters.AddWithValue("@Id", id);
 
         var command2 = new SqlCommand(
-            "SELECT u.Id, u.Name, u.Email, u.Gender, u.RG, u.CPF, u.MotherName, u.RegistrationStatus, u.RegistrationDate, c.Id ContactId, c.PhoneNumber, c.MobilePhone FROM Users u LEFT JOIN Contacts c ON u.Id = c.UserId WHERE u.Id = @Id;",
+            "SELECT d.Id, d.Name FROM Users u LEFT JOIN UsersDepartments ud ON u.Id = ud.UserId LEFT JOIN Departments d ON ud.DepartmentId = d.Id WHERE u.Id = @Id;",
             _connection);
         command2.Parameters.AddWithValue("@Id", id);
+
+        var command3 = new SqlCommand(
+            "SELECT u.Id, u.Name, u.Email, u.Gender, u.RG, u.CPF, u.MotherName, u.RegistrationStatus, u.RegistrationDate, c.Id ContactId, c.PhoneNumber, c.MobilePhone FROM Users u LEFT JOIN Contacts c ON u.Id = c.UserId WHERE u.Id = @Id;",
+            _connection);
+        command3.Parameters.AddWithValue("@Id", id);
 
 
         using (_connection)
         {
             var deliveryAddresses = new List<DeliveryAddress>();
+            var departments = new List<Department>();
+
             _connection.Open();
 
             using (command1)
@@ -69,7 +76,7 @@ public class UserRepository : IUserRepository
                 {
                     var address = new DeliveryAddress
                     {
-                        Id = dataReader.GetInt32("AddressId"),
+                        Id = dataReader.GetInt32("Id"),
                         Name = dataReader.GetString("Name"),
                         Street = dataReader.GetString("Street"),
                         Number = dataReader.GetString("Number"),
@@ -86,14 +93,26 @@ public class UserRepository : IUserRepository
                 dataReader.Close();
             }
 
-            if (deliveryAddresses.Count == 0)
-            {
-                return null;
-            }
-
             using (command2)
             {
                 var dataReader = command2.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    var department = new Department
+                    {
+                        Id = dataReader.GetInt32("Id"), Name = dataReader.GetString("Name")
+                    };
+
+                    departments.Add(department);
+                }
+
+                dataReader.Close();
+            }
+
+            using (command3)
+            {
+                var dataReader = command3.ExecuteReader();
 
                 if (!dataReader.Read())
                 {
@@ -117,7 +136,8 @@ public class UserRepository : IUserRepository
                         PhoneNumber = dataReader.GetString("PhoneNumber"),
                         MobilePhone = dataReader.GetString("MobilePhone")
                     },
-                    DeliveryAddresses = deliveryAddresses
+                    DeliveryAddresses = deliveryAddresses,
+                    Departments = departments
                 };
             }
         }
