@@ -16,6 +16,11 @@ public class CourseService
             throw new Exception();
         }
 
+        if (_courseRepository.GetByName(courseDto.Name) != null)
+        {
+            throw new Exception();
+        }
+
         var course = new Course(courseDto.Name, courseDto.Description, courseDto.Workload, targetAudience,
             courseDto.Price);
         _courseRepository.Insert(course);

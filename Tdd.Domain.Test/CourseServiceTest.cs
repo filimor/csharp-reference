@@ -48,4 +48,12 @@ public sealed class CourseServiceTest : IDisposable
         _courseDto.TargetAudience = "Médico";
         Assert.Throws<Exception>(() => _courseService.Add(_courseDto));
     }
+
+    [Fact]
+    public void ShouldNotAcceptAnAlreadyExistingName()
+    {
+        var existingCourse = CourseBuilder.New().WithName(_courseDto.Name).Build();
+        _courseRepositoryMock.Setup(r => r.GetByName(_courseDto.Name)).Returns(existingCourse);
+        Assert.Throws<Exception>(() => _courseService.Add(_courseDto));
+    }
 }
