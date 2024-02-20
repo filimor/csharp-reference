@@ -11,7 +11,12 @@ public class CourseService
 
     public void Add(CourseDto courseDto)
     {
-        var course = new Course(courseDto.Name, courseDto.Description, courseDto.Workload, courseDto.TargetAudience,
+        if (!Enum.TryParse<TargetAudience>(courseDto.TargetAudience, out var targetAudience))
+        {
+            throw new Exception();
+        }
+
+        var course = new Course(courseDto.Name, courseDto.Description, courseDto.Workload, targetAudience,
             courseDto.Price);
         _courseRepository.Insert(course);
     }
