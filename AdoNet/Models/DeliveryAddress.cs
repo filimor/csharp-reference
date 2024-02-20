@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AdoNet.Models;
+namespace AdoNetDapper.Models;
 
 public class DeliveryAddress
 {

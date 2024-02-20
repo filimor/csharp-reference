@@ -1,10 +1,10 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
-using AdoNet.Models;
+using AdoNetDapper.Models;
 
-namespace AdoNet.Repositories;
+namespace AdoNetDapper.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserAdoNetRepository : IUserRepository
 {
     private readonly SqlConnection _connection =
         new(

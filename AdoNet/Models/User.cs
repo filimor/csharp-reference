@@ -1,4 +1,4 @@
-﻿namespace AdoNet.Models;
+﻿namespace AdoNetDapper.Models;
 
 public class User
 {

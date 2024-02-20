@@ -1,14 +1,14 @@
-﻿using AdoNet.Models;
-using AdoNet.Repositories;
+﻿using AdoNetDapper.Models;
+using AdoNetDapper.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdoNet.Controllers;
+namespace AdoNetDapper.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly UserRepository _repository = new();
+    private readonly UserAdoNetRepository _repository = new();
 
     [HttpGet]
     public IActionResult Get()

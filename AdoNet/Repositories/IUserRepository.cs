@@ -1,6 +1,6 @@
-﻿using AdoNet.Models;
+﻿using AdoNetDapper.Models;
 
-namespace AdoNet.Repositories;
+namespace AdoNetDapper.Repositories;
 
 internal interface IUserRepository
 {
