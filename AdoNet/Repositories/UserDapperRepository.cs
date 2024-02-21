@@ -17,7 +17,14 @@ public class UserDapperRepository : IUserRepository
 
     public User? Get(int id)
     {
-        return _connection.QueryFirstOrDefault<User>("SELECT * FROM Users WHERE Id = @Id", new { Id = id });
+        return _connection.Query<User, Contact, User>(
+            "SELECT u.Id, u.Name, u.Email, u.Gender, u.RG, u.CPF, u.MotherName, u.RegistrationStatus, u.RegistrationDate, c.Id ContactId, c.PhoneNumber, c.MobilePhone FROM Users u LEFT JOIN Contacts c ON u.Id = c.UserId WHERE u.Id = @Id;",
+            (user, contact) =>
+            {
+                user.Contact = contact;
+                return user;
+            },
+            new { Id = id }).FirstOrDefault();
     }
 
     public void Insert(User user)
